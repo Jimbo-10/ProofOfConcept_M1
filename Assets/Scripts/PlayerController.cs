@@ -13,10 +13,12 @@ public class PlayerController : MonoBehaviour
     InputAction mousePos;
     InputAction shootAction;
 
-    public float moveSpeed = 5f;    
-    public float fireRate = 0.2f;
-
-    public float nextFireTime;
+    [SerializeField]
+    float moveSpeed = 5f;
+    [SerializeField]
+    float fireRate = 0.2f;
+    [SerializeField]
+    float nextFireTime;
 
     private Rigidbody2D rb;
     private Vector2 moveInput;
@@ -72,5 +74,13 @@ public class PlayerController : MonoBehaviour
     void Shoot()
     {
         Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject);
+        }
     }
 }
