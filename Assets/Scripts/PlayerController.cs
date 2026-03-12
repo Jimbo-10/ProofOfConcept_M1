@@ -1,10 +1,18 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
-    public GameObject bulletPrefab;
-    public Transform firePoint;
+    [SerializeField]
+    GameObject bulletPrefab;
+
+    [SerializeField]
+    Transform firePoint;
+
+    [SerializeField]
+    Tilemap mapTilemap;
+
     private Camera mainCamera;
 
     [SerializeField]
@@ -23,10 +31,18 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 moveInput;
 
+    public AudioSource audioSource;
+    public AudioClip shootSound;
+
+    UIManager uiManager;
+    MainMenuUI ui;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        uiManager = FindObjectOfType<UIManager>();
+        ui = FindObjectOfType<MainMenuUI>();
         mainCamera = Camera.main;
 
         moveAction = inputActions.FindAction("Move");
@@ -39,12 +55,13 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = moveAction.ReadValue<Vector2>();
         RotatePlayer();
-        HandleShooting();
+        Shoot();
     }
 
     private void FixedUpdate()
     {
         rb.linearVelocity = moveInput * moveSpeed;
+       // KeepPlayerInsideMap();
     }
 
     void RotatePlayer()
@@ -62,24 +79,38 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    void HandleShooting()
+    void Shoot()
     {
         if (shootAction.IsPressed() && Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + fireRate;
-            Shoot();
+            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            audioSource.PlayOneShot(shootSound);
         }
+       
     }
 
-    void Shoot()
+    /*void KeepPlayerInsideMap()
     {
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-    }
+        Bounds bounds = mapTilemap.localBounds;
 
+        Vector3 pos = transform.position;
+
+        pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
+        pos.y = Mathf.Clamp(pos.y, bounds.min.y, bounds.max.y);
+
+        transform.position = pos;
+    }*/
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
+            uiManager.TakeDamage(2);
+            if(uiManager.currentHealth <= 0)
+            {
+                ui.SceneChange("GameOver");
+            }
+
             Destroy(collision.gameObject);
         }
     }
