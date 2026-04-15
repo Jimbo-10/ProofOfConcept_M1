@@ -54,6 +54,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
+
+        if (moveInput.magnitude < 0.1f)
+        {
+            moveInput = Vector2.zero;
+        }
         RotatePlayer();
         Shoot();
     }

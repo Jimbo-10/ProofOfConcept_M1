@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     [SerializeField]
@@ -61,7 +62,7 @@ public class UIManager : MonoBehaviour
 
         if(currentHealth > 0f)
         {
-            ui.SceneChange("WinScene");
+            SceneManager.LoadScene("WinScene");
         }
     }
 

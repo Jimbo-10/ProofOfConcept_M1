@@ -18,7 +18,7 @@ public class BulletBehavior : MonoBehaviour
         rb.linearVelocity = transform.right * speed;
 
         uiManager = FindObjectOfType<UIManager>();
-        stats = FindObjectOfType<EnemyStats>();
+        //stats = FindObjectOfType<EnemyStats>();
     }
 
     void Update()
@@ -39,33 +39,20 @@ public class BulletBehavior : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
-        {          
-            if(stats != null)
-            {
-                stats.TakeDamage(50);
-            }
-
-            if (stats.currentHealth <= 0 && uiManager != null)
-            {
-                uiManager.AddKill();
-                Destroy(collision.gameObject);
-            }
-
-            Destroy(gameObject);
-        }
-
-        else if (collision.CompareTag("Zombie"))
+        if (collision.CompareTag("Enemy") || collision.CompareTag("Zombie"))
         {
-            if (stats != null)
-            {
-                stats.TakeDamage(15);
-            }
+            EnemyStats enemyStats = collision.GetComponent<EnemyStats>();
 
-            if (stats.currentHealth <= 0 && uiManager != null)
+            if (enemyStats != null)
             {
-                uiManager.AddKill();
-                Destroy(collision.gameObject);
+                float damage = collision.CompareTag("Enemy") ? 50f : 15f;
+
+                enemyStats.TakeDamage(damage);
+
+                if (enemyStats.currentHealth <= 0 && uiManager != null)
+                {
+                    uiManager.AddKill();
+                }
             }
 
             Destroy(gameObject);
