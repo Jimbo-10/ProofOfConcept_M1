@@ -111,12 +111,17 @@ public class PlayerController : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             uiManager.TakeDamage(2);
-            if(uiManager.currentHealth <= 0)
-            {
-                ui.SceneChange("GameOver");
-            }
-
             Destroy(collision.gameObject);
+        }
+        else if (collision.CompareTag("Zombie"))
+        {
+            uiManager.TakeDamage(10);
+            Destroy(collision.gameObject);
+        }
+
+        if (uiManager.currentHealth <= 0)
+        {
+            SceneManager.LoadScene("GameOver");
         }
     }
 }
